@@ -18,8 +18,8 @@ pub fn compute_fold<F: Field>(
     // We recursively compute the fold, rec is where it is
     for rec in 0..folding_factor {
         let offset = answers.len() / 2;
-        let mut new_answers = vec![F::ZERO; offset];
-        let mut coset_index_inv = F::ONE;
+        let mut new_answers = vec![F::zero(); offset];
+        let mut coset_index_inv = F::one();
         for i in 0..offset {
             let f_value_0 = answers[i];
             let f_value_1 = answers[i + offset];
