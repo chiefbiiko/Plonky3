@@ -8,7 +8,7 @@ mod wavelet;
 
 use self::matrix::MatrixMut;
 // use ark_ff::FftField;
-use p3_field::{Field, TwoAdicField};
+use p3_field::TwoAdicField;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;

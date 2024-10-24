@@ -7,7 +7,8 @@ use rand::{
 
 use crate::utils::to_binary;
 
-use self::hypercube::BinaryHypercubePoint;
+mod hypercube;
+use hypercube::BinaryHypercubePoint;
 
 //TODO
 // pub mod coeffs;
@@ -33,7 +34,7 @@ where
         Self(
             to_binary(point.0, num_variables)
                 .into_iter()
-                .map(|x| if x { F::ONE } else { F::ZERO })
+                .map(|x| if x { F::one() } else { F::zero() })
                 .collect(),
         )
     }
@@ -41,9 +42,9 @@ where
     pub fn to_hypercube(&self) -> Option<BinaryHypercubePoint> {
         let mut counter = 0;
         for &coord in &self.0 {
-            if coord == F::ZERO {
+            if coord == F::zero() {
                 counter <<= 1;
-            } else if coord == F::ONE {
+            } else if coord == F::one() {
                 counter = (counter << 1) + 1;
             } else {
                 return None;
@@ -91,11 +92,11 @@ where
     let n_variables = coords.n_variables();
     assert!(point < (1 << n_variables));
 
-    let mut acc = F::ONE;
+    let mut acc = F::one();
 
     for val in coords.0.iter().rev() {
         let b = point % 2;
-        acc *= if b == 1 { *val } else { F::ONE - *val };
+        acc *= if b == 1 { *val } else { F::one() - *val };
         point >>= 1;
     }
 
@@ -108,10 +109,10 @@ where
 {
     assert_eq!(coords.n_variables(), point.n_variables());
 
-    let mut acc = F::ONE;
+    let mut acc = F::one();
 
     for (&l, &r) in coords.0.iter().zip(&point.0) {
-        acc *= l * r + (F::ONE - l) * (F::ONE - r);
+        acc *= l * r + (F::one() - l) * (F::one() - r);
     }
 
     acc
@@ -121,20 +122,20 @@ pub fn eq_poly3<F>(coords: &MultilinearPoint<F>, mut point: usize) -> F
 where
     F: Field,
 {
-    let two = F::ONE + F::ONE;
-    let two_inv = two.inverse().unwrap();
+    let two = F::one() + F::one();
+    let two_inv = two.inverse();//.unwrap();
 
     let n_variables = coords.n_variables();
     assert!(point < 3usize.pow(n_variables as u32));
 
-    let mut acc = F::ONE;
+    let mut acc = F::one();
 
     for &val in coords.0.iter().rev() {
         let b = point % 3;
         acc *= match b {
-            0 => (val - F::ONE) * (val - two) * two_inv,
-            1 => val * (val - two) * (-F::ONE),
-            2 => val * (val - F::ONE) * two_inv,
+            0 => (val - F::one()) * (val - two) * two_inv,
+            1 => val * (val - two) * (-F::one()),
+            2 => val * (val - F::one()) * two_inv,
             _ => unreachable!(),
         };
         point /= 3;
