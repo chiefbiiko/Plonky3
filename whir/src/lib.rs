@@ -1,17 +1,11 @@
-//! An implementation of the WHIR low-degree test (LDT).
-
-#![no_std]
-
-extern crate alloc;
-
-mod config;
-// mod fold_even_odd;
-// mod proof;
-// pub mod prover;
-// mod two_adic_pcs;
-// pub mod verifier;
-
-pub use config::*;
-// pub use fold_even_odd::*;
-// pub use proof::*;
-// pub use two_adic_pcs::*;
+// pub mod cmdline_utils;
+// pub mod crypto; // Crypto utils
+// pub mod domain; // Domain that we are evaluating over
+// pub mod fs_utils;
+// pub mod ntt;
+// pub mod parameters;
+// pub mod poly_utils; // Utils for polynomials
+// pub mod sumcheck; // Sumcheck specialised
+pub mod utils; // Utils in general
+// pub mod whir; // The real prover
+// pub mod whir_ldt; // Whir as a LDT // Shared parameters
