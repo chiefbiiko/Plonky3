@@ -7,7 +7,8 @@ mod utils;
 mod wavelet;
 
 use self::matrix::MatrixMut;
-use ark_ff::FftField;
+// use ark_ff::FftField;
+use p3_field::{Field, TwoAdicField};
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -19,7 +20,7 @@ pub use self::{
 };
 
 /// RS encode at a rate 1/`expansion`.
-pub fn expand_from_coeff<F: FftField>(coeffs: &[F], expansion: usize) -> Vec<F> {
+pub fn expand_from_coeff<F: TwoAdicField>(coeffs: &[F], expansion: usize) -> Vec<F> {
     let engine = ntt::NttEngine::<F>::new_from_cache();
     let expanded_size = coeffs.len() * expansion;
     let mut result = Vec::with_capacity(expanded_size);
@@ -31,8 +32,8 @@ pub fn expand_from_coeff<F: FftField>(coeffs: &[F], expansion: usize) -> Vec<F> 
     result.extend_from_slice(coeffs);
     #[cfg(not(feature = "parallel"))]
     for i in 1..expansion {
-        let root = root.pow([i as u64]);
-        let mut offset = F::ONE;
+        let root = root.exp_u64(i as u64);//.pow([i as u64]);
+        let mut offset = F::one();
         result.extend(coeffs.iter().map(|x| {
             let val = *x * offset;
             offset *= root;

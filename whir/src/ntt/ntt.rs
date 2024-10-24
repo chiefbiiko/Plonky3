@@ -10,8 +10,9 @@ use super::{
 // use ark_ff::{FftField, Field};
 
 //TODO need fft field and ntt translation of trivial field elements
+// F::two_adic_generator(log_n)
 
-use p3_field::Field;
+use p3_field::{Field, TwoAdicField};
 use std::{
     any::{Any, TypeId},
     collections::HashMap,
@@ -48,24 +49,24 @@ pub struct NttEngine<F: Field> {
 }
 
 /// Compute the NTT of a slice of field elements using a cached engine.
-pub fn ntt<F: FftField>(values: &mut [F]) {
+pub fn ntt<F: TwoAdicField>(values: &mut [F]) {
     NttEngine::new_from_cache().ntt(values);
 }
 
 /// Compute the many NTTs of size `size` using a cached engine.
-pub fn ntt_batch<F: FftField>(values: &mut [F], size: usize) {
+pub fn ntt_batch<F: TwoAdicField>(values: &mut [F], size: usize) {
     NttEngine::new_from_cache().ntt_batch(values, size);
 }
 
-pub fn intt<F: FftField>(values: &mut [F]) {
+pub fn intt<F: TwoAdicField>(values: &mut [F]) {
     NttEngine::new_from_cache().intt(values);
 }
 
-pub fn intt_batch<F: FftField>(values: &mut [F], size: usize) {
+pub fn intt_batch<F: TwoAdicField>(values: &mut [F], size: usize) {
     NttEngine::new_from_cache().intt_batch(values, size);
 }
 
-impl<F: FftField> NttEngine<F> {
+impl<F: TwoAdicField> NttEngine<F> {
     /// Get or create a cached engine for the field `F`.
     pub fn new_from_cache() -> Arc<Self> {
         let mut cache = ENGINE_CACHE.lock().unwrap();
@@ -83,9 +84,9 @@ impl<F: FftField> NttEngine<F> {
     fn new_from_fftfield() -> Self {
         // TODO: Support SMALL_SUBGROUP
         if F::TWO_ADICITY <= 63 {
-            Self::new(1 << F::TWO_ADICITY, F::TWO_ADIC_ROOT_OF_UNITY)
+            Self::new(1 << F::TWO_ADICITY, F::two_adic_generator(F::TWO_ADICITY))//F::TWO_ADIC_ROOT_OF_UNITY)
         } else {
-            let mut generator = F::TWO_ADIC_ROOT_OF_UNITY;
+            let mut generator = F::two_adic_generator(F::TWO_ADICITY);//F::TWO_ADIC_ROOT_OF_UNITY;
             for _ in 0..(63 - F::TWO_ADICITY) {
                 generator = generator.square();
             }
@@ -98,38 +99,42 @@ impl<F: Field> NttEngine<F> {
     pub fn new(order: usize, omega_order: F) -> Self {
         assert!(order.trailing_zeros() > 0, "Order must be a power of 2.");
         // TODO: Assert that omega_order factors into 2s and 3s.
-        assert_eq!(omega_order.pow([order as u64]), F::ONE);
-        assert_ne!(omega_order.pow([order as u64 / 2]), F::ONE);
+
+        // assert_eq!(omega_order.pow([order as u64]), F::one());
+        assert_eq!(omega_order.exp_u64(order as u64), F::one());
+        // assert_ne!(omega_order.pow([order as u64 / 2]), F::one());
+        assert_eq!(omega_order.exp_u64(order as u64 / 2), F::one());
+
         let mut res = NttEngine {
             order,
             omega_order,
-            half_omega_3_1_plus_2: F::ZERO,
-            half_omega_3_1_min_2: F::ZERO,
-            omega_4_1: F::ZERO,
-            omega_8_1: F::ZERO,
-            omega_8_3: F::ZERO,
-            omega_16_1: F::ZERO,
-            omega_16_3: F::ZERO,
-            omega_16_9: F::ZERO,
+            half_omega_3_1_plus_2: F::zero(),
+            half_omega_3_1_min_2: F::zero(),
+            omega_4_1: F::zero(),
+            omega_8_1: F::zero(),
+            omega_8_3: F::zero(),
+            omega_16_1: F::zero(),
+            omega_16_3: F::zero(),
+            omega_16_9: F::zero(),
             roots: RwLock::new(Vec::new()),
         };
         if order % 3 == 0 {
             let omega_3_1 = res.root(3);
             let omega_3_2 = omega_3_1 * omega_3_1;
-            res.half_omega_3_1_min_2 = (omega_3_1 - omega_3_2) / F::from(2u64);
-            res.half_omega_3_1_plus_2 = (omega_3_1 + omega_3_2) / F::from(2u64);
+            res.half_omega_3_1_min_2 = (omega_3_1 - omega_3_2) / F::from_canonical_u64(2u64);
+            res.half_omega_3_1_plus_2 = (omega_3_1 + omega_3_2) / F::from_canonical_u64(2u64);
         }
         if order % 4 == 0 {
             res.omega_4_1 = res.root(4);
         }
         if order % 8 == 0 {
             res.omega_8_1 = res.root(8);
-            res.omega_8_3 = res.omega_8_1.pow([3]);
+            res.omega_8_3 = res.omega_8_1.exp_u64(3); //.omega_8_1.pow([3]);
         }
         if order % 16 == 0 {
             res.omega_16_1 = res.root(16);
-            res.omega_16_3 = res.omega_16_1.pow([3]);
-            res.omega_16_9 = res.omega_16_1.pow([9]);
+            res.omega_16_3 = res.omega_16_1.exp_u64(3);//.omega_16_1.pow([3]);
+            res.omega_16_9 = res.omega_16_1.exp_u64(9);//.omega_16_1.pow([9]);
         }
         res
     }
@@ -172,7 +177,7 @@ impl<F: Field> NttEngine<F> {
             self.order % order == 0,
             "Subgroup of requested order does not exist."
         );
-        self.omega_order.pow([(self.order / order) as u64])
+        self.omega_order.exp_u64((self.order / order) as u64)//.pow([(self.order / order) as u64])
     }
 
     /// Returns a cached table of roots of unity of the given order.
@@ -199,14 +204,14 @@ impl<F: Field> NttEngine<F> {
                 let root = self.root(size);
                 #[cfg(not(feature = "parallel"))]
                 {
-                    let mut root_i = F::ONE;
+                    let mut root_i = F::one();
                     for _ in 0..size {
                         roots.push(root_i);
                         root_i *= root;
                     }
                 }
                 #[cfg(feature = "parallel")]
-                roots.par_extend((0..size).into_par_iter().map_with(F::ZERO, |root_i, i| {
+                roots.par_extend((0..size).into_par_iter().map_with(F::zero(), |root_i, i| {
                     if root_i.is_zero() {
                         *root_i = root.pow([i as u64]);
                     } else {
