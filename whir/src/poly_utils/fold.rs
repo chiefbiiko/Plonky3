@@ -102,17 +102,19 @@ pub fn restructure_evaluations<F: TwoAdicField>(
 
 #[cfg(test)]
 mod tests {
-    use ark_ff::{FftField, Field};
+    // use ark_ff::{FftField, Field};
+    use p3_field::{Field, TwoAdicField};
+    use p3_mersenne_31::Mersenne31;
 
     use crate::{
-        crypto::fields::Field64,
         poly_utils::{coeffs::CoefficientList, MultilinearPoint},
         utils::stack_evaluations,
     };
 
     use super::{compute_fold, restructure_evaluations};
 
-    type F = Field64;
+    // type F = Field64;
+    type F = Mersenne31;
 
     #[test]
     fn test_folding() {

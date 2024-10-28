@@ -15,7 +15,7 @@ use hypercube::BinaryHypercubePoint;
 pub mod fold;
 // pub mod gray_lag_poly;
 pub mod hypercube;
-// pub mod sequential_lag_poly;
+pub mod sequential_lag_poly;
 // pub mod streaming_evaluation_helper;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
