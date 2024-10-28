@@ -96,18 +96,20 @@ impl<F: Field> Iterator for LagrangePolynomialIterator<F> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        crypto::fields::Field64,
+        // crypto::fields::Field64,
         poly_utils::{eq_poly, hypercube::BinaryHypercubePoint, MultilinearPoint},
     };
+    use p3_mersenne_31::Mersenne31;
+    use p3_field::AbstractField;
 
     use super::LagrangePolynomialIterator;
 
-    type F = Field64;
+    type F = Mersenne31;
 
     #[test]
     fn test_blendy() {
-        let one = F::from(1);
-        let (a, b) = (F::from(2), F::from(3));
+        let one = F::from_canonical_u64(1);
+        let (a, b) = (F::from_canonical_u64(2), F::from_canonical_u64(3));
         let point_1 = MultilinearPoint(vec![a, b]);
 
         let mut lag_iterator = LagrangePolynomialIterator::new(&point_1);
@@ -133,7 +135,7 @@ mod tests {
 
     #[test]
     fn test_blendy_2() {
-        let point = MultilinearPoint(vec![F::from(12), F::from(13), F::from(32)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(12), F::from_canonical_u64(13), F::from_canonical_u64(32)]);
 
         let mut last_b = None;
         for (b, lag) in LagrangePolynomialIterator::new(&point) {
@@ -147,11 +149,11 @@ mod tests {
     #[test]
     fn test_blendy_3() {
         let point = MultilinearPoint(vec![
-            F::from(414151),
-            F::from(109849018),
-            F::from(033184190),
-            F::from(033184190),
-            F::from(033184190),
+            F::from_canonical_u64(414151),
+            F::from_canonical_u64(109849018),
+            F::from_canonical_u64(033184190),
+            F::from_canonical_u64(033184190),
+            F::from_canonical_u64(033184190),
         ]);
 
         let mut last_b = None;

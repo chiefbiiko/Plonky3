@@ -103,6 +103,7 @@ pub fn restructure_evaluations<F: TwoAdicField>(
 #[cfg(test)]
 mod tests {
     // use ark_ff::{FftField, Field};
+    use p3_field::AbstractField;
     use p3_field::{Field, TwoAdicField};
     use p3_mersenne_31::Mersenne31;
 
@@ -125,12 +126,12 @@ mod tests {
         let folding_factor = 3; // We fold in 8
         let folding_factor_exp = 1 << folding_factor;
 
-        let poly = CoefficientList::new((0..num_coeffs).map(F::from).collect());
+        let poly = CoefficientList::new((0..num_coeffs).map(F::from_canonical_u64).collect());
 
         let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
 
         let index = 15;
-        let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from(i as u64)).collect();
+        let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
         let coset_offset = root_of_unity.pow([index]);
         let coset_gen = root_of_unity.pow([domain_size / folding_factor_exp]);
@@ -150,7 +151,7 @@ mod tests {
             &folding_randomness,
             coset_offset.inverse().unwrap(),
             coset_gen.inverse().unwrap(),
-            F::from(2).inverse().unwrap(),
+            F::from_canonical_u64(2).inverse(),//.unwrap(),
             folding_factor,
         );
 
@@ -173,12 +174,12 @@ mod tests {
         let folding_factor = 3; // We fold in 8
         let folding_factor_exp = 1 << folding_factor;
 
-        let poly = CoefficientList::new((0..num_coeffs).map(F::from).collect());
+        let poly = CoefficientList::new((0..num_coeffs).map(F::from_canonical_u64).collect());
 
         let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
         let root_of_unity_inv = root_of_unity.inverse().unwrap();
 
-        let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from(i as u64)).collect();
+        let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
         // Evaluate the polynomial on the domain
         let domain_evaluations: Vec<_> = (0..domain_size)
@@ -214,7 +215,7 @@ mod tests {
                 &folding_randomness,
                 offset_inv,
                 coset_gen_inv,
-                F::from(2).inverse().unwrap(),
+                F::from_canonical_u64(2).inverse(),//.unwrap(),
                 folding_factor,
             );
 

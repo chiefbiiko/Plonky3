@@ -147,33 +147,35 @@ where
 mod tests {
     use crate::poly_utils::eq_poly3;
     use crate::poly_utils::hypercube::BinaryHypercube;
-    use crate::{crypto::fields::Field64, poly_utils::eq_poly};
+    use crate::poly_utils::eq_poly;
+    use p3_mersenne_31::Mersenne31;
+    use p3_field::AbstractField;
 
     use super::coeffs::CoefficientList;
     use super::BinaryHypercubePoint;
     use super::MultilinearPoint;
 
-    type F = Field64;
+    type F = Mersenne31;
 
     #[test]
     fn test_equality() {
-        let point = MultilinearPoint(vec![F::from(0), F::from(0)]);
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(0)), F::from(1));
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(1)), F::from(0));
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(2)), F::from(0));
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(3)), F::from(0));
+        let point = MultilinearPoint(vec![F::from_canonical_u64(0), F::from_canonical_u64(0)]);
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(0)), F::from_canonical_u64(1));
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(1)), F::from_canonical_u64(0));
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(2)), F::from_canonical_u64(0));
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(3)), F::from_canonical_u64(0));
 
-        let point = MultilinearPoint(vec![F::from(1), F::from(0)]);
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(0)), F::from(0));
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(1)), F::from(0));
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(2)), F::from(1));
-        assert_eq!(eq_poly(&point, BinaryHypercubePoint(3)), F::from(0));
+        let point = MultilinearPoint(vec![F::from_canonical_u64(1), F::from_canonical_u64(0)]);
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(0)), F::from_canonical_u64(0));
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(1)), F::from_canonical_u64(0));
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(2)), F::from_canonical_u64(1));
+        assert_eq!(eq_poly(&point, BinaryHypercubePoint(3)), F::from_canonical_u64(0));
     }
 
     #[test]
     fn test_equality_again() {
-        let poly = CoefficientList::new(vec![F::from(35), F::from(97), F::from(10), F::from(32)]);
-        let point = MultilinearPoint(vec![F::from(42), F::from(36)]);
+        let poly = CoefficientList::new(vec![F::from_canonical_u64(35), F::from_canonical_u64(97), F::from_canonical_u64(10), F::from_canonical_u64(32)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(42), F::from_canonical_u64(36)]);
         let eval = poly.evaluate(&point);
 
         assert_eq!(
@@ -189,59 +191,59 @@ mod tests {
 
     #[test]
     fn test_equality3() {
-        let point = MultilinearPoint(vec![F::from(0), F::from(0)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(0), F::from_canonical_u64(0)]);
 
-        assert_eq!(eq_poly3(&point, 0), F::from(1));
-        assert_eq!(eq_poly3(&point, 1), F::from(0));
-        assert_eq!(eq_poly3(&point, 2), F::from(0));
-        assert_eq!(eq_poly3(&point, 3), F::from(0));
-        assert_eq!(eq_poly3(&point, 4), F::from(0));
-        assert_eq!(eq_poly3(&point, 5), F::from(0));
-        assert_eq!(eq_poly3(&point, 6), F::from(0));
-        assert_eq!(eq_poly3(&point, 7), F::from(0));
-        assert_eq!(eq_poly3(&point, 8), F::from(0));
+        assert_eq!(eq_poly3(&point, 0), F::from_canonical_u64(1));
+        assert_eq!(eq_poly3(&point, 1), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 2), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 3), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 4), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 5), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 6), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 7), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 8), F::from_canonical_u64(0));
 
-        let point = MultilinearPoint(vec![F::from(1), F::from(0)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(1), F::from_canonical_u64(0)]);
 
-        assert_eq!(eq_poly3(&point, 0), F::from(0));
-        assert_eq!(eq_poly3(&point, 1), F::from(0));
-        assert_eq!(eq_poly3(&point, 2), F::from(0));
-        assert_eq!(eq_poly3(&point, 3), F::from(1));
-        assert_eq!(eq_poly3(&point, 4), F::from(0));
-        assert_eq!(eq_poly3(&point, 5), F::from(0));
-        assert_eq!(eq_poly3(&point, 6), F::from(0));
-        assert_eq!(eq_poly3(&point, 7), F::from(0));
-        assert_eq!(eq_poly3(&point, 8), F::from(0));
+        assert_eq!(eq_poly3(&point, 0), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 1), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 2), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 3), F::from_canonical_u64(1));
+        assert_eq!(eq_poly3(&point, 4), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 5), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 6), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 7), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 8), F::from_canonical_u64(0));
 
-        let point = MultilinearPoint(vec![F::from(0), F::from(2)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(0), F::from_canonical_u64(2)]);
 
-        assert_eq!(eq_poly3(&point, 0), F::from(0));
-        assert_eq!(eq_poly3(&point, 1), F::from(0));
-        assert_eq!(eq_poly3(&point, 2), F::from(1));
-        assert_eq!(eq_poly3(&point, 3), F::from(0));
-        assert_eq!(eq_poly3(&point, 4), F::from(0));
-        assert_eq!(eq_poly3(&point, 5), F::from(0));
-        assert_eq!(eq_poly3(&point, 6), F::from(0));
-        assert_eq!(eq_poly3(&point, 7), F::from(0));
-        assert_eq!(eq_poly3(&point, 8), F::from(0));
+        assert_eq!(eq_poly3(&point, 0), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 1), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 2), F::from_canonical_u64(1));
+        assert_eq!(eq_poly3(&point, 3), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 4), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 5), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 6), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 7), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 8), F::from_canonical_u64(0));
 
-        let point = MultilinearPoint(vec![F::from(2), F::from(2)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(2), F::from_canonical_u64(2)]);
 
-        assert_eq!(eq_poly3(&point, 0), F::from(0));
-        assert_eq!(eq_poly3(&point, 1), F::from(0));
-        assert_eq!(eq_poly3(&point, 2), F::from(0));
-        assert_eq!(eq_poly3(&point, 3), F::from(0));
-        assert_eq!(eq_poly3(&point, 4), F::from(0));
-        assert_eq!(eq_poly3(&point, 5), F::from(0));
-        assert_eq!(eq_poly3(&point, 6), F::from(0));
-        assert_eq!(eq_poly3(&point, 7), F::from(0));
-        assert_eq!(eq_poly3(&point, 8), F::from(1));
+        assert_eq!(eq_poly3(&point, 0), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 1), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 2), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 3), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 4), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 5), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 6), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 7), F::from_canonical_u64(0));
+        assert_eq!(eq_poly3(&point, 8), F::from_canonical_u64(1));
     }
 
     #[test]
     #[should_panic]
     fn test_equality_2() {
-        let point = MultilinearPoint(vec![F::from(0), F::from(0)]);
+        let point = MultilinearPoint(vec![F::from_canonical_u64(0), F::from_canonical_u64(0)]);
 
         let _x = eq_poly(&point, BinaryHypercubePoint(4));
     }
@@ -250,9 +252,9 @@ mod tests {
     fn expand_from_univariate() {
         let num_variables = 4;
 
-        let point0 = MultilinearPoint::expand_from_univariate(F::from(0), num_variables);
-        let point1 = MultilinearPoint::expand_from_univariate(F::from(1), num_variables);
-        let point2 = MultilinearPoint::expand_from_univariate(F::from(2), num_variables);
+        let point0 = MultilinearPoint::expand_from_univariate(F::from_canonical_u64(0), num_variables);
+        let point1 = MultilinearPoint::expand_from_univariate(F::from_canonical_u64(1), num_variables);
+        let point2 = MultilinearPoint::expand_from_univariate(F::from_canonical_u64(2), num_variables);
 
         assert_eq!(point0.n_variables(), num_variables);
         assert_eq!(point1.n_variables(), num_variables);
@@ -272,7 +274,7 @@ mod tests {
         );
 
         assert_eq!(
-            MultilinearPoint(vec![F::from(256), F::from(16), F::from(4), F::from(2)]),
+            MultilinearPoint(vec![F::from_canonical_u64(256), F::from_canonical_u64(16), F::from_canonical_u64(4), F::from_canonical_u64(2)]),
             point2
         );
     }
