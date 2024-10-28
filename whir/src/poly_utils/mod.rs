@@ -7,15 +7,14 @@ use rand::{
 
 use crate::utils::to_binary;
 
-mod hypercube;
 use hypercube::BinaryHypercubePoint;
 
 //TODO
 // pub mod coeffs;
 // pub mod evals;
-// pub mod fold;
+pub mod fold;
 // pub mod gray_lag_poly;
-// pub mod hypercube;
+pub mod hypercube;
 // pub mod sequential_lag_poly;
 // pub mod streaming_evaluation_helper;
 

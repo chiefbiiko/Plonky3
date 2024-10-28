@@ -4,6 +4,7 @@ use core::{fmt::Display, marker::PhantomData, str::FromStr};
 // use ark_crypto_primitives::merkle_tree::{Config, LeafParam, TwoToOneParam};
 use serde::Serialize;
 
+use p3_field::PackedValue;
 use p3_symmetric::{SerializingHasher32, CryptographicHasher, CompressionFunctionFromHasher, PseudoCompressionFunction};
 
 //from https://github.com/arkworks-rs/crypto-primitives/blob/6a770ebf87c13d2e0aef0237d1f4669d94eb58a7/crypto-primitives/src/merkle_tree/mod.rs#L124
@@ -108,9 +109,11 @@ impl Display for FoldType {
 }
 
 #[derive(Clone)]
-pub struct WhirParameters<H, C, PowStrategy>
+pub struct WhirParameters<P, PW, H, C, PowStrategy, DIGEST_ELEMS>
 where
     // MerkleConfig: Config,
+    P: PackedValue,
+    PW: PackedValue,
     H: CryptographicHasher<P::Value, [PW::Value; DIGEST_ELEMS]>,
     H: CryptographicHasher<P, [PW; DIGEST_ELEMS]>,
     H: Sync,
@@ -133,13 +136,19 @@ where
     // pub leaf_hash_params: LeafParam<MerkleConfig>,
     // pub two_to_one_params: TwoToOneParam<MerkleConfig>,
     // MMCS
-    pub mmcs_h: SerializingHasher32<CryptographicHasher>,
-    pub mmcs_c: CompressionFunctionFromHasher<CryptographicHashe, usize, usize>,
+    pub mmcs_h: SerializingHasher32<H>,
+    pub mmcs_c: CompressionFunctionFromHasher<C, 2, 32>, //FIXME constant generics
 }
 
-impl<H, C, PowStrategy> Display for WhirParameters<H, C, PowStrategy>
+// p3_mersenne_31::Mersenne31,
+// u8,
+
+// not important
+impl<P, PW, H, C, PowStrategy> Display for WhirParameters<P, PW, H, C, PowStrategy, DIGEST_ELEMS>
 where
     // MerkleConfig: Config,
+    P: PackedValue,
+    PW: PackedValue,
     H: CryptographicHasher<P::Value, [PW::Value; DIGEST_ELEMS]>,
     H: CryptographicHasher<P, [PW; DIGEST_ELEMS]>,
     H: Sync,

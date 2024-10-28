@@ -21,8 +21,8 @@ pub fn compute_fold<F: Field>(
     // We recursively compute the fold, rec is where it is
     for rec in 0..folding_factor {
         let offset = answers.len() / 2;
-        let mut new_answers = vec![F::ZERO; offset];
-        let mut coset_index_inv = F::ONE;
+        let mut new_answers = vec![F::zero(); offset];
+        let mut coset_index_inv = F::one();
         for i in 0..offset {
             let f_value_0 = answers[i];
             let f_value_1 = answers[i + offset];
@@ -45,7 +45,7 @@ pub fn compute_fold<F: Field>(
     answers[0]
 }
 
-pub fn restructure_evaluations<F: FftField>(
+pub fn restructure_evaluations<F: TwoAdicField>(
     mut stacked_evaluations: Vec<F>,
     fold_type: FoldType,
     _domain_gen: F,
@@ -65,10 +65,10 @@ pub fn restructure_evaluations<F: FftField>(
 
             // Apply coset and size correction.
             // Stacked evaluation at i is f(B_l) where B_l = w^i * <w^n/k>
-            let size_inv = F::from(folding_size).inverse().unwrap();
+            let size_inv = F::from_canonical_u64(folding_size).inverse();//.unwrap();
             #[cfg(not(feature = "parallel"))]
             {
-                let mut coset_offset_inv = F::ONE;
+                let mut coset_offset_inv = F::one();
                 for answers in stacked_evaluations.chunks_exact_mut(folding_size as usize) {
                     let mut scale = size_inv;
                     for v in answers.iter_mut() {
@@ -82,8 +82,8 @@ pub fn restructure_evaluations<F: FftField>(
             stacked_evaluations
                 .par_chunks_exact_mut(folding_size as usize)
                 .enumerate()
-                .for_each_with(F::ZERO, |offset, (i, answers)| {
-                    if *offset == F::ZERO {
+                .for_each_with(F::zero(), |offset, (i, answers)| {
+                    if *offset == F::zero() {
                         *offset = domain_gen_inv.pow([i as u64]);
                     } else {
                         *offset *= domain_gen_inv;
