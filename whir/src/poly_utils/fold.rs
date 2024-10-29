@@ -128,21 +128,21 @@ mod tests {
 
         let poly = CoefficientList::new((0..num_coeffs).map(F::from_canonical_u64).collect());
 
-        let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
+        // let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
         //
-        // let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
+        let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
 
         let index = 15;
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
-        let coset_offset = root_of_unity.pow([index]);
-        let coset_gen = root_of_unity.pow([domain_size / folding_factor_exp]);
+        let coset_offset = root_of_unity.exp_u64(index);
+        let coset_gen = root_of_unity.exp_u64((domain_size / folding_factor_exp) as u64);
 
         // Evaluate the polynomial on the coset
         let poly_eval: Vec<_> = (0..folding_factor_exp)
             .map(|i| {
                 poly.evaluate(&MultilinearPoint::expand_from_univariate(
-                    coset_offset * coset_gen.pow([i]),
+                    coset_offset * coset_gen.exp_u64(i as u64),
                     num_variables,
                 ))
             })
@@ -151,15 +151,15 @@ mod tests {
         let fold_value = compute_fold(
             &poly_eval,
             &folding_randomness,
-            coset_offset.inverse().unwrap(),
-            coset_gen.inverse().unwrap(),
+            coset_offset.inverse(),//.unwrap(),
+            coset_gen.inverse(),//.unwrap(),
             F::from_canonical_u64(2).inverse(),//.unwrap(),
             folding_factor,
         );
 
         let truth_value = poly.fold(&MultilinearPoint(folding_randomness)).evaluate(
             &MultilinearPoint::expand_from_univariate(
-                root_of_unity.pow([folding_factor_exp * index]),
+                root_of_unity.exp_u64((folding_factor_exp as u64) * index),
                 2,
             ),
         );
