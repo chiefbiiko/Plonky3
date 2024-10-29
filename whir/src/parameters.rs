@@ -108,64 +108,65 @@ impl Display for FoldType {
     }
 }
 
-#[derive(Clone)]
-pub struct WhirParameters<P, PW, H, C, PowStrategy, DIGEST_ELEMS>
-where
-    // MerkleConfig: Config,
-    P: PackedValue,
-    PW: PackedValue,
-    H: CryptographicHasher<P::Value, [PW::Value; DIGEST_ELEMS]>,
-    H: CryptographicHasher<P, [PW; DIGEST_ELEMS]>,
-    H: Sync,
-    C: PseudoCompressionFunction<[PW::Value; DIGEST_ELEMS], 2>,
-    C: PseudoCompressionFunction<[PW; DIGEST_ELEMS], 2>,
-    C: Sync,
-{
-    pub starting_log_inv_rate: usize,
-    pub folding_factor: usize,
-    pub soundness_type: SoundnessType,
-    pub security_level: usize,
-    pub pow_bits: usize,
 
-    pub fold_optimisation: FoldType,
+//TODO TODO TODO TODO
+// #[derive(Clone)]
+// pub struct WhirParameters<P, PW, H, C, PowStrategy, DIGEST_ELEMS>
+// where
+//     // MerkleConfig: Config,
+//     P: PackedValue,
+//     PW: PackedValue,
+//     H: CryptographicHasher<P::Value, [PW::Value; DIGEST_ELEMS]>,
+//     H: CryptographicHasher<P, [PW; DIGEST_ELEMS]>,
+//     H: Sync,
+//     C: PseudoCompressionFunction<[PW::Value; DIGEST_ELEMS], 2>,
+//     C: PseudoCompressionFunction<[PW; DIGEST_ELEMS], 2>,
+//     C: Sync,
+// {
+//     pub starting_log_inv_rate: usize,
+//     pub folding_factor: usize,
+//     pub soundness_type: SoundnessType,
+//     pub security_level: usize,
+//     pub pow_bits: usize,
 
-    // PoW parameters
-    pub _pow_parameters: PhantomData<PowStrategy>,
+//     pub fold_optimisation: FoldType,
 
-    // Merkle tree parameters
-    // pub leaf_hash_params: LeafParam<MerkleConfig>,
-    // pub two_to_one_params: TwoToOneParam<MerkleConfig>,
-    // MMCS
-    pub mmcs_h: SerializingHasher32<H>,
-    pub mmcs_c: CompressionFunctionFromHasher<C, 2, 32>, //FIXME constant generics
-}
+//     // PoW parameters
+//     pub _pow_parameters: PhantomData<PowStrategy>,
 
-// p3_mersenne_31::Mersenne31,
-// u8,
+//     // Merkle tree parameters
+//     // pub leaf_hash_params: LeafParam<MerkleConfig>,
+//     // pub two_to_one_params: TwoToOneParam<MerkleConfig>,
+//     // MMCS
+//     pub mmcs_h: SerializingHasher32<H>,
+//     pub mmcs_c: CompressionFunctionFromHasher<C, 2, 32>, //FIXME constant generics
+// }
 
-// not important
-impl<P, PW, H, C, PowStrategy> Display for WhirParameters<P, PW, H, C, PowStrategy, DIGEST_ELEMS>
-where
-    // MerkleConfig: Config,
-    P: PackedValue,
-    PW: PackedValue,
-    H: CryptographicHasher<P::Value, [PW::Value; DIGEST_ELEMS]>,
-    H: CryptographicHasher<P, [PW; DIGEST_ELEMS]>,
-    H: Sync,
-    C: PseudoCompressionFunction<[PW::Value; DIGEST_ELEMS], 2>,
-    C: PseudoCompressionFunction<[PW; DIGEST_ELEMS], 2>,
-    C: Sync,
-{
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        writeln!(
-            f,
-            "Targeting {}-bits of security with {}-bits of PoW - soundness: {:?}",
-            self.security_level, self.pow_bits, self.soundness_type
-        )?;
-        writeln!(
-            f,
-            "Starting rate: 2^-{}, folding_factor: {}, fold_opt_type: {}",
-            self.starting_log_inv_rate, self.folding_factor, self.fold_optimisation,
-        )
-    }
-}
+// // p3_mersenne_31::Mersenne31,
+// // u8,
+
+// impl<P, PW, H, C, PowStrategy> Display for WhirParameters<P, PW, H, C, PowStrategy, DIGEST_ELEMS>
+// where
+//     // MerkleConfig: Config,
+//     P: PackedValue,
+//     PW: PackedValue,
+//     H: CryptographicHasher<P::Value, [PW::Value; DIGEST_ELEMS]>,
+//     H: CryptographicHasher<P, [PW; DIGEST_ELEMS]>,
+//     H: Sync,
+//     C: PseudoCompressionFunction<[PW::Value; DIGEST_ELEMS], 2>,
+//     C: PseudoCompressionFunction<[PW; DIGEST_ELEMS], 2>,
+//     C: Sync,
+// {
+//     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+//         writeln!(
+//             f,
+//             "Targeting {}-bits of security with {}-bits of PoW - soundness: {:?}",
+//             self.security_level, self.pow_bits, self.soundness_type
+//         )?;
+//         writeln!(
+//             f,
+//             "Starting rate: 2^-{}, folding_factor: {}, fold_opt_type: {}",
+//             self.starting_log_inv_rate, self.folding_factor, self.fold_optimisation,
+//         )
+//     }
+// }

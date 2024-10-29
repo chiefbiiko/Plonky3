@@ -129,6 +129,8 @@ mod tests {
         let poly = CoefficientList::new((0..num_coeffs).map(F::from_canonical_u64).collect());
 
         let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
+        //
+        // let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
 
         let index = 15;
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
@@ -177,7 +179,8 @@ mod tests {
         let poly = CoefficientList::new((0..num_coeffs).map(F::from_canonical_u64).collect());
 
         let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
-        let root_of_unity_inv = root_of_unity.inverse().unwrap();
+        // let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
+        let root_of_unity_inv = root_of_unity.inverse();//.unwrap();
 
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
