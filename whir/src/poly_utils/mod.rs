@@ -11,7 +11,7 @@ use hypercube::BinaryHypercubePoint;
 
 //TODO
 // pub mod coeffs;
-// pub mod evals;
+pub mod evals;
 pub mod fold;
 // pub mod gray_lag_poly;
 pub mod hypercube;
