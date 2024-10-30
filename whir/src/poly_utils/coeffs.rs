@@ -294,14 +294,16 @@ where
 
 #[cfg(test)]
 mod tests {
-    use ark_poly::{univariate::DensePolynomial, Polynomial};
+    // use ark_poly::{univariate::DensePolynomial, Polynomial};
 
     use crate::{
-        crypto::fields::Field64,
+        // crypto::fields::Field64,
         poly_utils::{coeffs::CoefficientList, evals::EvaluationsList, MultilinearPoint},
     };
+    use p3_mersenne_31::Mersenne31;
+    use p3_field::AbstractField;
 
-    type F = Field64;
+    type F = Mersenne31;//Field64;
 
     #[test]
     fn test_evaluation_conversion() {
@@ -379,15 +381,17 @@ mod tests {
         ];
 
         let mv_poly = CoefficientList::new(polynomial);
-        let uv_poly: DensePolynomial<_> = mv_poly.clone().into();
+        // let uv_poly: DensePolynomial<_> = mv_poly.clone().into();
 
         let eval_point = F::from(4999);
         assert_eq!(
-            uv_poly.evaluate(&F::from(1)),
+            // uv_poly.evaluate(&F::from(1)),
+            mv_poly.evaluate_at_univariate(&vec![F::from_canonical_u64(1)])[0],
             F::from((0..=15).sum::<u32>())
         );
         assert_eq!(
-            uv_poly.evaluate(&eval_point),
+            // uv_poly.evaluate(&eval_point),
+            mv_poly.evaluate_at_univariate(&vec![eval_point])[0],
             mv_poly.evaluate(&MultilinearPoint::expand_from_univariate(eval_point, 4))
         )
     }
