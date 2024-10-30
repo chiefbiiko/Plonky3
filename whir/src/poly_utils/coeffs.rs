@@ -1,7 +1,7 @@
 use super::{evals::EvaluationsList, hypercube::BinaryHypercubePoint, MultilinearPoint};
 use crate::{ntt::wavelet_transform, poly_utils::helpers::eval_poly};
 // use ark_ff::Field;
-use p3_field::{Field, TwoAdicField};
+use p3_field::{Field, TwoAdicField, ExtensionField};
 // use ark_poly::{univariate::DensePolynomial, DenseUVPolynomial, Polynomial};
 #[cfg(feature = "parallel")]
 use {
@@ -35,7 +35,8 @@ where
     }
 
     #[cfg(not(feature = "parallel"))]
-    fn eval_extension<E: Field<BasePrimeField = F>>(coeff: &[F], eval: &[E], scalar: E) -> E {
+    fn eval_extension<E: ExtensionField<F>>(coeff: &[F], eval: &[E], scalar: E) -> E {
+    // fn eval_extension<E: Field<BasePrimeField = F>>(coeff: &[F], eval: &[E], scalar: E) -> E {
         debug_assert_eq!(coeff.len(), 1 << eval.len());
         if let Some((&x, tail)) = eval.split_first() {
             let (low, high) = coeff.split_at(coeff.len() / 2);
@@ -43,12 +44,14 @@ where
             let b = Self::eval_extension(high, tail, scalar * x);
             a + b
         } else {
-            scalar.mul_by_base_prime_field(&coeff[0])
+            // scalar.mul_by_base_prime_field(&coeff[0])
+            scalar * coeff[0]
         }
     }
 
     #[cfg(feature = "parallel")]
-    fn eval_extension<E: Field<BasePrimeField = F>>(coeff: &[F], eval: &[E], scalar: E) -> E {
+    fn eval_extension<E: ExtensionField<F>>(coeff: &[F], eval: &[E], scalar: E) -> E {
+    // fn eval_extension<E: Field<BasePrimeField = F>>(coeff: &[F], eval: &[E], scalar: E) -> E {
         const PARALLEL_THRESHOLD: usize = 10;
         debug_assert_eq!(coeff.len(), 1 << eval.len());
         if let Some((&x, tail)) = eval.split_first() {
@@ -64,16 +67,17 @@ where
                     + Self::eval_extension(high, tail, scalar * x)
             }
         } else {
-            scalar.mul_by_base_prime_field(&coeff[0])
+            // scalar.mul_by_base_prime_field(&coeff[0])
+            scalar * coeff[0]
         }
     }
 
-    pub fn evaluate_at_extension<E: Field<BasePrimeField = F>>(
+    pub fn evaluate_at_extension<E: ExtensionField<F>>(
         &self,
         point: &MultilinearPoint<E>,
     ) -> E {
         assert_eq!(self.num_variables, point.n_variables());
-        Self::eval_extension(&self.coeffs, &point.0, E::ONE)
+        Self::eval_extension(&self.coeffs, &point.0, E::one())
     }
 
     pub fn evaluate_at_univariate(&self, points: &[F]) -> Vec<F> {
@@ -86,7 +90,10 @@ where
     }
 }
 
-impl<F> CoefficientList<F> {
+impl<F> CoefficientList<F> 
+where 
+    F: Field 
+{
     pub fn new(coeffs: Vec<F>) -> Self {
         let len = coeffs.len();
         assert!(len.is_power_of_two());
@@ -111,11 +118,12 @@ impl<F> CoefficientList<F> {
     }
 
     // Map to the corresponding polynomial in the extension field
-    pub fn to_extension<E: Field<BasePrimeField = F>>(self) -> CoefficientList<E> {
+    pub fn to_extension<E: ExtensionField<F>>(self) -> CoefficientList<E> {
         CoefficientList::new(
             self.coeffs
                 .into_iter()
-                .map(E::from_base_prime_field)
+                // .map(E::from_base_prime_field)
+                .map(E::from_base)
                 .collect(),
         )
     }
