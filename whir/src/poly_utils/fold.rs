@@ -84,7 +84,8 @@ pub fn restructure_evaluations<F: TwoAdicField>(
                 .enumerate()
                 .for_each_with(F::zero(), |offset, (i, answers)| {
                     if *offset == F::zero() {
-                        *offset = domain_gen_inv.pow([i as u64]);
+                        // *offset = domain_gen_inv.pow([i as u64]);
+                        *offset = domain_gen_inv.exp_u64(i as u64);
                     } else {
                         *offset *= domain_gen_inv;
                     }
@@ -102,6 +103,7 @@ pub fn restructure_evaluations<F: TwoAdicField>(
 
 #[cfg(test)]
 mod tests {
+    // use p3_field::extension::BinomialExtensionField;
     // use ark_ff::{FftField, Field};
     use p3_field::AbstractField;
     use p3_field::{Field, TwoAdicField};
@@ -114,8 +116,11 @@ mod tests {
 
     use super::{compute_fold, restructure_evaluations};
 
+    use p3_field::extension::{HasTwoAdicBionmialExtension, BinomialExtensionField};
+
     // type F = Field64;
-    type F = Mersenne31;
+    // type F = Mersenne31;
+    type F = BinomialExtensionField<Mersenne31, 2>;
 
     #[test]
     fn test_folding() {
@@ -178,15 +183,17 @@ mod tests {
 
         let poly = CoefficientList::new((0..num_coeffs).map(F::from_canonical_u64).collect());
 
-        let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
+        // let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
         // let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
+        let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
         let root_of_unity_inv = root_of_unity.inverse();//.unwrap();
 
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
         // Evaluate the polynomial on the domain
         let domain_evaluations: Vec<_> = (0..domain_size)
-            .map(|w| root_of_unity.pow([w as u64]))
+            // .map(|w| root_of_unity.pow([w as u64]))
+            .map(|w| root_of_unity.exp_u64(w as u64))
             .map(|point| {
                 poly.evaluate(&MultilinearPoint::expand_from_univariate(
                     point,
@@ -206,10 +213,12 @@ mod tests {
         );
 
         let num = domain_size / folding_factor_exp;
-        let coset_gen_inv = root_of_unity_inv.pow(&[num]);
+        // let coset_gen_inv = root_of_unity_inv.pow(&[num]);
+        let coset_gen_inv = root_of_unity_inv.exp_u64(num as u64);
 
         for index in 0..num {
-            let offset_inv = root_of_unity_inv.pow(&[index]);
+            // let offset_inv = root_of_unity_inv.pow(&[index]);
+            let offset_inv = root_of_unity_inv.exp_u64(index as u64);
             let span =
                 (index * folding_factor_exp) as usize..((index + 1) * folding_factor_exp) as usize;
 
