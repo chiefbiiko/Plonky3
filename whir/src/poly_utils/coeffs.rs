@@ -307,7 +307,7 @@ mod tests {
 
     #[test]
     fn test_evaluation_conversion() {
-        let coeffs = vec![F::from(22), F::from(05), F::from(10), F::from(97)];
+        let coeffs = vec![F::from_canonical_u64(22), F::from_canonical_u64(05), F::from_canonical_u64(10), F::from_canonical_u64(97)];
         let coeffs_list = CoefficientList::new(coeffs.clone());
 
         let evaluations = EvaluationsList::from(coeffs_list);
@@ -323,11 +323,11 @@ mod tests {
 
     #[test]
     fn test_folding() {
-        let coeffs = vec![F::from(22), F::from(05), F::from(00), F::from(00)];
+        let coeffs = vec![F::from_canonical_u64(22), F::from_canonical_u64(05), F::from_canonical_u64(00), F::from_canonical_u64(00)];
         let coeffs_list = CoefficientList::new(coeffs);
 
-        let alpha = F::from(100);
-        let beta = F::from(32);
+        let alpha = F::from_canonical_u64(100);
+        let beta = F::from_canonical_u64(32);
 
         let folded = coeffs_list.fold(&MultilinearPoint(vec![beta]));
 
@@ -340,10 +340,10 @@ mod tests {
     #[test]
     fn test_folding_and_evaluation() {
         let num_variables = 10;
-        let coeffs = (0..(1 << num_variables)).map(F::from).collect();
+        let coeffs = (0..(1 << num_variables)).map(F::from_canonical_u64).collect();
         let coeffs_list = CoefficientList::new(coeffs);
 
-        let randomness: Vec<_> = (0..num_variables).map(|i| F::from(35 * i as u64)).collect();
+        let randomness: Vec<_> = (0..num_variables).map(|i| F::from_canonical_u64(35 * i as u64)).collect();
         for k in 0..num_variables {
             let fold_part = randomness[0..k].to_vec();
             let eval_part = randomness[k..randomness.len()].to_vec();
@@ -362,32 +362,32 @@ mod tests {
     #[test]
     fn test_evaluation_mv() {
         let polynomial = vec![
-            F::from(0),
-            F::from(1),
-            F::from(2),
-            F::from(3),
-            F::from(4),
-            F::from(5),
-            F::from(6),
-            F::from(7),
-            F::from(8),
-            F::from(9),
-            F::from(10),
-            F::from(11),
-            F::from(12),
-            F::from(13),
-            F::from(14),
-            F::from(15),
+            F::from_canonical_u64(0),
+            F::from_canonical_u64(1),
+            F::from_canonical_u64(2),
+            F::from_canonical_u64(3),
+            F::from_canonical_u64(4),
+            F::from_canonical_u64(5),
+            F::from_canonical_u64(6),
+            F::from_canonical_u64(7),
+            F::from_canonical_u64(8),
+            F::from_canonical_u64(9),
+            F::from_canonical_u64(10),
+            F::from_canonical_u64(11),
+            F::from_canonical_u64(12),
+            F::from_canonical_u64(13),
+            F::from_canonical_u64(14),
+            F::from_canonical_u64(15),
         ];
 
         let mv_poly = CoefficientList::new(polynomial);
         // let uv_poly: DensePolynomial<_> = mv_poly.clone().into();
 
-        let eval_point = F::from(4999);
+        let eval_point = F::from_canonical_u64(4999);
         assert_eq!(
-            // uv_poly.evaluate(&F::from(1)),
+            // uv_poly.evaluate(&F::from_canonical_u64(1)),
             mv_poly.evaluate_at_univariate(&vec![F::from_canonical_u64(1)])[0],
-            F::from((0..=15).sum::<u32>())
+            F::from_canonical_u64((0..=15).sum::<u64>())
         );
         assert_eq!(
             // uv_poly.evaluate(&eval_point),
