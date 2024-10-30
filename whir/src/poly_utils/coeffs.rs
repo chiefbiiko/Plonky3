@@ -134,37 +134,37 @@ fn eval_multivariate<F: Field>(coeffs: &[F], point: &[F]) -> F {
     debug_assert_eq!(coeffs.len(), 1 << point.len());
     match point {
         [] => coeffs[0],
-        [x] => coeffs[0] + coeffs[1] * x,
+        [x] => coeffs[0] + coeffs[1] * *x,
         [x0, x1] => {
-            let b0 = coeffs[0] + coeffs[1] * x1;
-            let b1 = coeffs[2] + coeffs[3] * x1;
-            b0 + b1 * x0
+            let b0 = coeffs[0] + coeffs[1] * *x1;
+            let b1 = coeffs[2] + coeffs[3] * *x1;
+            b0 + b1 * *x0
         }
         [x0, x1, x2] => {
-            let b00 = coeffs[0] + coeffs[1] * x2;
-            let b01 = coeffs[2] + coeffs[3] * x2;
-            let b10 = coeffs[4] + coeffs[5] * x2;
-            let b11 = coeffs[6] + coeffs[7] * x2;
-            let b0 = b00 + b01 * x1;
-            let b1 = b10 + b11 * x1;
-            b0 + b1 * x0
+            let b00 = coeffs[0] + coeffs[1] * *x2;
+            let b01 = coeffs[2] + coeffs[3] * *x2;
+            let b10 = coeffs[4] + coeffs[5] * *x2;
+            let b11 = coeffs[6] + coeffs[7] * *x2;
+            let b0 = b00 + b01 * *x1;
+            let b1 = b10 + b11 * *x1;
+            b0 + b1 * *x0
         }
         [x0, x1, x2, x3] => {
-            let b000 = coeffs[0] + coeffs[1] * x3;
-            let b001 = coeffs[2] + coeffs[3] * x3;
-            let b010 = coeffs[4] + coeffs[5] * x3;
-            let b011 = coeffs[6] + coeffs[7] * x3;
-            let b100 = coeffs[8] + coeffs[9] * x3;
-            let b101 = coeffs[10] + coeffs[11] * x3;
-            let b110 = coeffs[12] + coeffs[13] * x3;
-            let b111 = coeffs[14] + coeffs[15] * x3;
-            let b00 = b000 + b001 * x2;
-            let b01 = b010 + b011 * x2;
-            let b10 = b100 + b101 * x2;
-            let b11 = b110 + b111 * x2;
-            let b0 = b00 + b01 * x1;
-            let b1 = b10 + b11 * x1;
-            b0 + b1 * x0
+            let b000 = coeffs[0] + coeffs[1] * *x3;
+            let b001 = coeffs[2] + coeffs[3] * *x3;
+            let b010 = coeffs[4] + coeffs[5] * *x3;
+            let b011 = coeffs[6] + coeffs[7] * *x3;
+            let b100 = coeffs[8] + coeffs[9] * *x3;
+            let b101 = coeffs[10] + coeffs[11] * *x3;
+            let b110 = coeffs[12] + coeffs[13] * *x3;
+            let b111 = coeffs[14] + coeffs[15] * *x3;
+            let b00 = b000 + b001 * *x2;
+            let b01 = b010 + b011 * *x2;
+            let b10 = b100 + b101 * *x2;
+            let b11 = b110 + b111 * *x2;
+            let b0 = b00 + b01 * *x1;
+            let b1 = b10 + b11 * *x1;
+            b0 + b1 * *x0
         }
         [x, tail @ ..] => {
             let (b0t, b1t) = coeffs.split_at(coeffs.len() / 2);
@@ -182,7 +182,7 @@ fn eval_multivariate<F: Field>(coeffs: &[F], point: &[F]) -> F {
                     (eval_multivariate(b0t, tail), eval_multivariate(b1t, tail))
                 }
             };
-            b0t + b1t * x
+            b0t + b1t * *x
         }
     }
 }
