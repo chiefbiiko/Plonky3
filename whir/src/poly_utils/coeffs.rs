@@ -213,23 +213,23 @@ where
     }
 }
 
-impl<F> From<CoefficientList<F>> for DensePolynomial<F>
-where
-    F: Field,
-{
-    fn from(value: CoefficientList<F>) -> Self {
-        DensePolynomial::from_coefficients_vec(value.coeffs)
-    }
-}
+// impl<F> From<CoefficientList<F>> for DensePolynomial<F>
+// where
+//     F: Field,
+// {
+//     fn from(value: CoefficientList<F>) -> Self {
+//         DensePolynomial::from_coefficients_vec(value.coeffs)
+//     }
+// }
 
-impl<F> From<DensePolynomial<F>> for CoefficientList<F>
-where
-    F: Field,
-{
-    fn from(value: DensePolynomial<F>) -> Self {
-        CoefficientList::new(value.coeffs)
-    }
-}
+// impl<F> From<DensePolynomial<F>> for CoefficientList<F>
+// where
+//     F: Field,
+// {
+//     fn from(value: DensePolynomial<F>) -> Self {
+//         CoefficientList::new(value.coeffs)
+//     }
+// }
 
 impl<F> From<CoefficientList<F>> for EvaluationsList<F>
 where
