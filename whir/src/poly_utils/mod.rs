@@ -10,13 +10,15 @@ use crate::utils::to_binary;
 use hypercube::BinaryHypercubePoint;
 
 //TODO
-// pub mod coeffs;
+pub mod coeffs;
 pub mod evals;
 pub mod fold;
 // pub mod gray_lag_poly;
 pub mod hypercube;
 pub mod sequential_lag_poly;
 // pub mod streaming_evaluation_helper;
+
+pub mod helpers;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MultilinearPoint<F>(pub Vec<F>);
