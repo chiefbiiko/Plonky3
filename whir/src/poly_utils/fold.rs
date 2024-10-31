@@ -108,6 +108,8 @@ mod tests {
     use p3_field::AbstractField;
     use p3_field::{Field, TwoAdicField};
     use p3_mersenne_31::Mersenne31;
+    use p3_bn254_fr::Bn254Fr;
+    use p3_baby_bear::BabyBear;
 
     use crate::{
         poly_utils::{coeffs::CoefficientList, MultilinearPoint},
@@ -127,7 +129,7 @@ mod tests {
         let num_variables = 5;
         let num_coeffs = 1 << num_variables;
 
-        let domain_size = 256;
+        let domain_size = 7;
         let folding_factor = 3; // We fold in 8
         let folding_factor_exp = 1 << folding_factor;
 
