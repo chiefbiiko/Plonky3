@@ -110,9 +110,10 @@ mod tests {
     use p3_mersenne_31::Mersenne31;
     use p3_bn254_fr::Bn254Fr;
     use p3_baby_bear::BabyBear;
+    use p3_goldilocks::Goldilocks;
 
     use crate::{
-        poly_utils::{coeffs::CoefficientList, MultilinearPoint},
+        poly_utils::{coeffs::CoefficientList, MultilinearPoint, helpers::get_root_of_unity},
         utils::stack_evaluations,
     };
 
@@ -122,14 +123,15 @@ mod tests {
 
     // type F = Field64;
     // type F = Mersenne31;
-    type F = BinomialExtensionField<Mersenne31, 2>;
+    // type F = BinomialExtensionField<Goldilocks, 2>;
+    type F = Goldilocks;
 
     #[test]
-    fn test_folding() {
+    fn test_folding_wip() {
         let num_variables = 5;
         let num_coeffs = 1 << num_variables;
 
-        let domain_size = 7;
+        let domain_size = 32;
         let folding_factor = 3; // We fold in 8
         let folding_factor_exp = 1 << folding_factor;
 
@@ -137,13 +139,17 @@ mod tests {
 
         // let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
         //
-        let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
-
+        //WRONG need get_root_of_unity(bits)
+        // let root_of_unity = F::two_adic_generator(domain_size);
+        let root_of_unity = get_root_of_unity(domain_size);
+        println!("root_of_unity\t{:?}", root_of_unity);
         let index = 15;
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
         let coset_offset = root_of_unity.exp_u64(index);
+        println!("coset_offset\t{:?}", coset_offset);
         let coset_gen = root_of_unity.exp_u64((domain_size / folding_factor_exp) as u64);
+        println!("coset_gen\t{:?}", coset_gen);
 
         // Evaluate the polynomial on the coset
         let poly_eval: Vec<_> = (0..folding_factor_exp)
