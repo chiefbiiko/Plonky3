@@ -119,7 +119,7 @@ mod tests {
 
     use super::{compute_fold, restructure_evaluations};
 
-    use p3_field::extension::{HasTwoAdicBionmialExtension, BinomialExtensionField};
+    use p3_field::{extension::{HasTwoAdicBionmialExtension, BinomialExtensionField}, PrimeField64};
 
     // type F = Field64;
     // type F = Mersenne31;
@@ -146,9 +146,9 @@ mod tests {
         let index = 15;
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
-        let coset_offset = root_of_unity.exp_u64(index);
+        let coset_offset = root_of_unity.exp_u64(index);// % F::from_canonical_u64(F::ORDER_U64);
         println!("coset_offset\t{:?}", coset_offset);
-        let coset_gen = root_of_unity.exp_u64((domain_size / folding_factor_exp) as u64);
+        let coset_gen = root_of_unity.exp_u64((domain_size / folding_factor_exp) as u64);// % F::ORDER_U64;
         println!("coset_gen\t{:?}", coset_gen);
 
         // Evaluate the polynomial on the coset
