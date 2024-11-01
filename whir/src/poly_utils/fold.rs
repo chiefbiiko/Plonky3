@@ -141,7 +141,7 @@ mod tests {
         //
         //WRONG need get_root_of_unity(bits)
         // let root_of_unity = F::two_adic_generator(domain_size);
-        let root_of_unity = get_root_of_unity(domain_size);
+        let root_of_unity: F = get_root_of_unity(domain_size).expect("nth root of unity");
         println!("root_of_unity\t{:?}", root_of_unity);
         let index = 15;
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
