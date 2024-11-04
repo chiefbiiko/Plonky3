@@ -127,12 +127,15 @@ impl<F: Field> NttEngine<F> {
         }
         if order % 8 == 0 {
             res.omega_8_1 = res.root(8);
-            res.omega_8_3 = res.omega_8_1.exp_u64(3); //.omega_8_1.pow([3]);
+            // res.omega_8_3 = res.omega_8_1.exp_u64(3); //.omega_8_1.pow([3]);
+            res.omega_8_3 = pow(res.omega_8_1, 3);//res.omega_8_1.exp_u64(3); //.omega_8_1.pow([3]);
         }
         if order % 16 == 0 {
             res.omega_16_1 = res.root(16);
-            res.omega_16_3 = res.omega_16_1.exp_u64(3);//.omega_16_1.pow([3]);
-            res.omega_16_9 = res.omega_16_1.exp_u64(9);//.omega_16_1.pow([9]);
+            // res.omega_16_3 = res.omega_16_1.exp_u64(3);//.omega_16_1.pow([3]);
+            res.omega_16_3 = pow(res.omega_16_1, 3);//res.omega_16_1.exp_u64(3);//.omega_16_1.pow([3]);
+            // res.omega_16_9 = res.omega_16_1.exp_u64(9);//.omega_16_1.pow([9]);
+            res.omega_16_9 = pow(res.omega_16_1, 9);//res.omega_16_1.exp_u64(9);//.omega_16_1.pow([9]);
         }
         res
     }
@@ -175,7 +178,8 @@ impl<F: Field> NttEngine<F> {
             self.order % order == 0,
             "Subgroup of requested order does not exist."
         );
-        self.omega_order.exp_u64((self.order / order) as u64)//.pow([(self.order / order) as u64])
+        // self.omega_order.exp_u64((self.order / order) as u64)//.pow([(self.order / order) as u64])
+        pow(self.omega_order, (self.order / order) as u64)
     }
 
     /// Returns a cached table of roots of unity of the given order.

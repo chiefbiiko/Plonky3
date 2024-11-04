@@ -18,6 +18,7 @@ pub use self::{
     transpose::transpose,
     wavelet::wavelet_transform,
 };
+use crate::utils::pow;
 
 /// RS encode at a rate 1/`expansion`.
 pub fn expand_from_coeff<F: TwoAdicField>(coeffs: &[F], expansion: usize) -> Vec<F> {
@@ -32,7 +33,8 @@ pub fn expand_from_coeff<F: TwoAdicField>(coeffs: &[F], expansion: usize) -> Vec
     result.extend_from_slice(coeffs);
     #[cfg(not(feature = "parallel"))]
     for i in 1..expansion {
-        let root = root.exp_u64(i as u64);//.pow([i as u64]);
+        // let root = root.exp_u64(i as u64);//.pow([i as u64]);
+        let root = pow(root, i as u64);//root.exp_u64(i as u64);//.pow([i as u64]);
         let mut offset = F::one();
         result.extend(coeffs.iter().map(|x| {
             let val = *x * offset;

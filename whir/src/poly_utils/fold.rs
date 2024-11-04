@@ -1,5 +1,5 @@
-use crate::ntt::intt_batch;
-use crate::parameters::FoldType;
+use crate::{ntt::intt_batch, parameters::FoldType};
+// use crate::parameters::FoldType;
 // use ark_ff::{FftField, Field};
 use p3_field::{Field, TwoAdicField};
 
@@ -85,7 +85,8 @@ pub fn restructure_evaluations<F: TwoAdicField>(
                 .for_each_with(F::zero(), |offset, (i, answers)| {
                     if *offset == F::zero() {
                         // *offset = domain_gen_inv.pow([i as u64]);
-                        *offset = domain_gen_inv.exp_u64(i as u64);
+                        // *offset = domain_gen_inv.exp_u64(i as u64);
+                        *offset = pow(domain_gen_inv, i as u64);
                     } else {
                         *offset *= domain_gen_inv;
                     }
@@ -114,7 +115,7 @@ mod tests {
 
     use crate::{
         poly_utils::{coeffs::CoefficientList, MultilinearPoint, helpers::get_root_of_unity},
-        utils::stack_evaluations,
+        utils::{stack_evaluations, pow},
     };
 
     use super::{compute_fold, restructure_evaluations};
@@ -146,16 +147,19 @@ mod tests {
         let index = 15;
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();
 
-        let coset_offset = root_of_unity.exp_u64(index);// % F::from_canonical_u64(F::ORDER_U64);
+        // let coset_offset = root_of_unity.exp_u64(index);// % F::from_canonical_u64(F::ORDER_U64);
+        let coset_offset = pow(root_of_unity, index as u64);
         println!("coset_offset\t{:?}", coset_offset);
-        let coset_gen = root_of_unity.exp_u64((domain_size / folding_factor_exp) as u64);// % F::ORDER_U64;
+        // let coset_gen = root_of_unity.exp_u64((domain_size / folding_factor_exp) as u64);// % F::ORDER_U64;
+        let coset_gen = pow(root_of_unity, (domain_size / folding_factor_exp) as u64);
         println!("coset_gen\t{:?}", coset_gen);
 
         // Evaluate the polynomial on the coset
         let poly_eval: Vec<_> = (0..folding_factor_exp)
             .map(|i| {
                 poly.evaluate(&MultilinearPoint::expand_from_univariate(
-                    coset_offset * coset_gen.exp_u64(i as u64),
+                    // coset_offset * coset_gen.exp_u64(i as u64),
+                    coset_offset * pow(coset_gen, i as u64),//coset_gen.exp_u64(i as u64),
                     num_variables,
                 ))
             })
@@ -172,7 +176,8 @@ mod tests {
 
         let truth_value = poly.fold(&MultilinearPoint(folding_randomness)).evaluate(
             &MultilinearPoint::expand_from_univariate(
-                root_of_unity.exp_u64((folding_factor_exp as u64) * index),
+                // root_of_unity.exp_u64((folding_factor_exp as u64) * index),
+                pow(root_of_unity, (folding_factor_exp as u64) * index),
                 2,
             ),
         );
@@ -203,7 +208,8 @@ mod tests {
         // Evaluate the polynomial on the domain
         let domain_evaluations: Vec<_> = (0..domain_size)
             // .map(|w| root_of_unity.pow([w as u64]))
-            .map(|w| root_of_unity.exp_u64(w as u64))
+            // .map(|w| root_of_unity.exp_u64(w as u64))
+            .map(|w| pow(root_of_unity, w as u64))
             .map(|point| {
                 poly.evaluate(&MultilinearPoint::expand_from_univariate(
                     point,
@@ -224,11 +230,13 @@ mod tests {
 
         let num = domain_size / folding_factor_exp;
         // let coset_gen_inv = root_of_unity_inv.pow(&[num]);
-        let coset_gen_inv = root_of_unity_inv.exp_u64(num as u64);
+        // let coset_gen_inv = root_of_unity_inv.exp_u64(num as u64);
+        let coset_gen_inv = pow(root_of_unity_inv, num as u64);
 
         for index in 0..num {
             // let offset_inv = root_of_unity_inv.pow(&[index]);
-            let offset_inv = root_of_unity_inv.exp_u64(index as u64);
+            // let offset_inv = root_of_unity_inv.exp_u64(index as u64);
+            let offset_inv = pow(root_of_unity_inv, index as u64);
             let span =
                 (index * folding_factor_exp) as usize..((index + 1) * folding_factor_exp) as usize;
 
