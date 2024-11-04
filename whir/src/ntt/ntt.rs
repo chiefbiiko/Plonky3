@@ -7,6 +7,7 @@ use super::{
     transpose,
     utils::{lcm, sqrt_factor, workload_size},
 };
+use crate::utils::pow;
 // use ark_ff::{FftField, Field};
 
 //TODO need fft field and ntt translation of trivial field elements
@@ -99,12 +100,9 @@ impl<F: Field> NttEngine<F> {
     pub fn new(order: usize, omega_order: F) -> Self {
         assert!(order.trailing_zeros() > 0, "Order must be a power of 2.");
         // TODO: Assert that omega_order factors into 2s and 3s.
-
-        // assert_eq!(omega_order.pow([order as u64]), F::one());
-        assert_eq!(omega_order.exp_u64(order as u64), F::one());
-        // assert_ne!(omega_order.pow([order as u64 / 2]), F::one());
-        assert_eq!(omega_order.exp_u64(order as u64 / 2), F::one());
-
+        assert_eq!(pow(omega_order, order as u64), F::one());
+        assert_ne!(pow(omega_order, order as u64 / 2), F::one());
+        
         let mut res = NttEngine {
             order,
             omega_order,

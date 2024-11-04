@@ -185,7 +185,7 @@ mod tests {
         let num_variables = 5;
         let num_coeffs = 1 << num_variables;
 
-        let domain_size = 256;
+        let domain_size = 32;
         let folding_factor = 3; // We fold in 8
         let folding_factor_exp = 1 << folding_factor;
 
@@ -193,7 +193,9 @@ mod tests {
 
         // let root_of_unity = F::get_root_of_unity(domain_size).unwrap();
         // let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
-        let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
+        // let root_of_unity = <F as TwoAdicField>::two_adic_generator(domain_size);
+        let root_of_unity: F = get_root_of_unity(domain_size).expect("nth root of unity");
+        println!("root_of_unity\t{:?}", root_of_unity);
         let root_of_unity_inv = root_of_unity.inverse();//.unwrap();
 
         let folding_randomness: Vec<_> = (0..folding_factor).map(|i| F::from_canonical_u64(i as u64)).collect();

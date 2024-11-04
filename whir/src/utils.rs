@@ -1,7 +1,18 @@
 use p3_field::Field;
 use std::collections::BTreeSet;
-//TODO
-use crate::ntt::transpose;
+
+use crate::{ntt::transpose, bits::BitIteratorBE};
+
+pub fn pow<F: Field>(base: F, exp: u64) -> F {
+    let mut res = F::one();
+    for i in BitIteratorBE::without_leading_zeros([exp.into()]) {
+        res = res.square();
+        if i {
+            res *= base;
+        }
+    }
+    res
+}
 
 pub fn is_power_of_two(n: usize) -> bool {
     n & (n - 1) == 0
